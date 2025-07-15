@@ -1,7 +1,7 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import { Parent, Admin } from '../types';
 import { auth, db } from '../firebase';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, User as FirebaseUser, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface CurrentUser {
@@ -60,9 +60,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const createParentAccount = async (data: Omit<Parent, 'id' | 'studentIds'>, password: string) => {
-        const userCredential = await createUserWithEmailAndPassword(auth, data.email, password);
+        // パスワードが空なら自動生成
+        let actualPassword = password;
+        if (!actualPassword) {
+            // 8文字以上のランダム英数字記号
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+            actualPassword = Array.from({length: 10}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        }
+        const userCredential = await createUserWithEmailAndPassword(auth, data.email, actualPassword);
         const parentData = { ...data, studentIds: [] };
         await setDoc(doc(db, "parents", userCredential.user.uid), parentData);
+        // パスワードリセットメール送信
+        auth.languageCode = 'ja'; // 日本語で送信
+        await sendPasswordResetEmail(auth, data.email);
     };
 
     const createAdminAccount = async (data: Omit<Admin, 'id'>, password: string) => {

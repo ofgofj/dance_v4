@@ -19,7 +19,6 @@ const initialParentState: Omit<Parent, 'id' | 'studentIds'> = {
 
 const ParentForm: React.FC<ParentFormProps> = ({ isOpen, onClose, parentToEdit }) => {
   const [parentData, setParentData] = useState(initialParentState);
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const { updateParent } = useData();
@@ -31,7 +30,6 @@ const ParentForm: React.FC<ParentFormProps> = ({ isOpen, onClose, parentToEdit }
       setParentData({name: parentToEdit.name, email: parentToEdit.email});
     } else {
       setParentData(initialParentState);
-      setPassword('');
     }
   }, [parentToEdit, isOpen]);
 
@@ -48,11 +46,7 @@ const ParentForm: React.FC<ParentFormProps> = ({ isOpen, onClose, parentToEdit }
             // Update only name, email change is complex with auth
             await updateParent({ ...parentToEdit, name: parentData.name });
         } else {
-            if (!password) {
-                setError('新規登録の場合、パスワードは必須です。');
-                return;
-            }
-            await createParentAccount(parentData, password);
+            await createParentAccount(parentData, ''); // パスワードはuseAuth側で自動生成
         }
         onClose();
     } catch (err: any) {
@@ -67,17 +61,6 @@ const ParentForm: React.FC<ParentFormProps> = ({ isOpen, onClose, parentToEdit }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="保護者氏名" id="name" name="name" value={parentData.name} onChange={handleChange} required className="md:col-span-2" />
           <Input label="メールアドレス" id="email" name="email" type="email" value={parentData.email} onChange={handleChange} required disabled={!!parentToEdit}/>
-          {!parentToEdit && (
-             <Input 
-                label="パスワード" 
-                id="password" 
-                name="password" 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required
-              />
-          )}
         </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <div className="flex justify-end space-x-3 pt-4">

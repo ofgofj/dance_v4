@@ -70,12 +70,7 @@ const LoginPage: React.FC = () => {
             <Button type="submit" className="w-full" size="lg">
               ログイン
             </Button>
-            
-            <div className="text-center text-sm mt-4">
-              <Link to="/register" className="font-medium text-pink-600 hover:text-pink-500">
-                新規登録はこちら
-              </Link>
-            </div>
+            {/* 新規登録ボタン削除済み */}
           </form>
         </Card>
       </div>

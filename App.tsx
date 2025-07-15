@@ -15,6 +15,7 @@ import ParentsPage from './pages/admin/ParentsPage';
 import ParentDashboardPage from './pages/parent/ParentDashboardPage';
 import AdminManagementPage from './pages/admin/AdminManagementPage';
 import RegisterPage from './pages/RegisterPage';
+import ChangePasswordPage from './pages/parent/ChangePasswordPage';
 
 const HomeRedirect: React.FC = () => {
   const { currentUser } = useAuth();
@@ -71,6 +72,7 @@ const App: React.FC = () => {
         {/* Parent Routes */}
         <Route element={<ProtectedRoute role="parent" />}>
             <Route path="/parent/dashboard" element={<ParentDashboardPage />} />
+            <Route path="/parent/change-password" element={<ChangePasswordPage />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" />} />

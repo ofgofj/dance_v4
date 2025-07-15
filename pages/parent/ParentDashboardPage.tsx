@@ -1,13 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useData } from '../../hooks/useData';
 import { Parent, Student, DanceClass, Payment, AttendanceRecord, AttendanceStatus } from '../../types';
 import Card from '../../components/ui/Card';
 import { ICONS } from '../../constants';
+import { useNavigate } from 'react-router-dom';
 
 const ParentDashboardPage: React.FC = () => {
   const { currentUser } = useAuth();
   const { students, classes, payments, attendance } = useData();
+  const navigate = useNavigate();
+
+  // 仮: パスワード変更フラグをlocalStorageで判定（後でFirestoreに変更）
+  useEffect(() => {
+    if (localStorage.getItem('forcePasswordChange') === 'true') {
+      navigate('/parent/change-password');
+    }
+  }, [navigate]);
 
   const parent = currentUser?.user as Parent;
 
